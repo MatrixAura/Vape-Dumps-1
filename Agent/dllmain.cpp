@@ -119,7 +119,6 @@ jbyteArray JNICALL DetourGetTexture(JNIEnv* jni_env, jclass a_cls, jstring name)
 			int written = fwrite(texture, sizeof(jbyte), len, fp);
 			if (written == 0) {
 				std::cout << "Failed to write texture. (is VapeTextures folder present?)" << std::endl;
-				MessageBoxA(nullptr, "Failed to write texture.", "Error", 0);
 			}
 			else if (written != sizeof(jbyte) * len) {
 				std::cout << "[Error] Could not write full bytes of texture: " << texture_name << " Key: " << key << std::endl;
