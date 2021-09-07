@@ -70,8 +70,6 @@ bool getNextFreeFilePath(std::wstring& path, const char* name, std::wstring exte
 
 typedef jint(JNICALL* GETKEY)(JNIEnv*, jclass);
 
-typedef jstring(JNICALL* GETSTRING)(JNIEnv*, jclass, jint);
-
 typedef jbyteArray(JNICALL* GETTEXTURE)(JNIEnv*, jclass, jstring);
 
 GETKEY fpGetKey;
@@ -79,14 +77,6 @@ GETKEY fpGetKey;
 jint JNICALL DetourGetKey(JNIEnv* jni_env, jclass a_cls)
 {
 	return key = fpGetKey(jni_env, a_cls);
-}
-
-GETSTRING fpGetString;
-
-jstring JNICALL DetourGetString(JNIEnv* jni_env, jclass a_class, jint index) {
-	auto string = fpGetString(jni_env, a_class, index);
-
-	return string;
 }
 
 GETTEXTURE fpGetTexture;
@@ -176,21 +166,6 @@ void JNICALL NativeMethodBind(jvmtiEnv* jvmti_env, JNIEnv* jni_env, jthread thre
 			std::cout << "[HOOK] Enabled GetTexture hook." << std::endl;
 		}
 	}
-	else if (!strcmp(name, "cs") && !strcmp(signature, "(I)Ljava/lang/String;")) {
-		if (MH_CreateHook(address, DetourGetString, reinterpret_cast<void**>(&fpGetString)) != MH_OK) {
-			std::cout << "[ERROR] Failed to create GetString hook." << std::endl;
-		}
-		else {
-			std::cout << "[HOOK] Created GetString hook." << std::endl;
-		}
-		if (MH_EnableHook(address) != MH_OK)
-		{
-			std::cout << "[ERROR] Failed to enable GetString hook." << std::endl;
-		}
-		else {
-			std::cout << "[HOOK] Enabled GetString hook." << std::endl;
-		}
-	}
 }
 
 JNIEXPORT jint JNICALL Agent_OnLoad(JavaVM* vm, char* options, void* reserved) {
@@ -220,8 +195,6 @@ JNIEXPORT jint JNICALL Agent_OnLoad(JavaVM* vm, char* options, void* reserved) {
 
 	(void)memset(&capabilities, 0, sizeof(capabilities));
 	{
-		capabilities.can_generate_method_entry_events = 1;
-		capabilities.can_generate_method_exit_events = 1;
 		capabilities.can_generate_native_method_bind_events = 1;
 	}
 	error = jvmti->AddCapabilities(&capabilities);
